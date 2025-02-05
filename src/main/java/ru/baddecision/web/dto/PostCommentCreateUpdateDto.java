@@ -4,16 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostCreateUpdateDto {
+public class PostCommentCreateUpdateDto {
     private Long id;
-    private String name;
+    private Long postId;
     private String text;
-    private MultipartFile file;
-    private String tags;
 }

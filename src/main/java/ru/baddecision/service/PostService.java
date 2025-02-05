@@ -1,6 +1,5 @@
 package ru.baddecision.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.baddecision.model.Post;
@@ -15,29 +14,27 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public List<Post> getBy(PostFilter filter) {
+    public List<Post> getPostBy(PostFilter filter) {
         return postRepository.getBy(filter);
     }
 
-    public Post getBy(Long id) {
+    public Post getPostBy(Long id) {
         return postRepository.getBy(id);
     }
 
-    public void create(Post post) {
+    public void createPost(Post post) {
         postRepository.create(post);
     }
 
-    public void update(Post post) {
+    public void updatePost(Post post) {
         postRepository.update(post);
     }
 
     public void likePost(Long id) {
-        Post post = getBy(id);
-        post.setLikeCount(post.getLikeCount() + 1);
-        update(post);
+        postRepository.likePost(id);
     }
 
-    public void delete(Long id) {
+    public void deletePost(Long id) {
         postRepository.delete(id);
     }
 }

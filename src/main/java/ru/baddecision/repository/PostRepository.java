@@ -1,6 +1,5 @@
 package ru.baddecision.repository;
 
-
 import ru.baddecision.model.Post;
 import ru.baddecision.model.PostFilter;
 
@@ -16,4 +15,6 @@ public interface PostRepository {
     void update(Post post);
 
     void delete(Long id);
+
+    void likePost(Long id);
 }
