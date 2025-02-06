@@ -26,8 +26,15 @@ public class PostService {
         postRepository.create(post);
     }
 
-    public void updatePost(Post post) {
-        postRepository.update(post);
+    public void updatePost(Post post, boolean needUpdateImage) {
+        Post existPost = getPostBy(post.getId());
+        existPost.setTags(post.getTags());
+        existPost.setName(post.getName());
+        existPost.setText(post.getText());
+        if (needUpdateImage) {
+            existPost.setImageName(post.getImageName());
+        }
+        postRepository.update(existPost);
     }
 
     public void likePost(Long id) {

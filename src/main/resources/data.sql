@@ -1,9 +1,8 @@
-INSERT INTO posts (name, text_, image_path, tags, like_count)
+INSERT INTO posts (name, text_, image_name, tags, like_count)
 VALUES
     ('Title 1', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', null, '{"tag1", "tag2"}', 1),
     ('Title 2', 'Text 2', null, '{"tag2", "tag3"}', 2),
     ('Title 3', 'Text 3', null, '{"tag5", "tag4"}', 3),
-    ('Title 4', 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using ''Content here, content here'', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for ''lorem ipsum'' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).', null, '{"tag6", "tag5"}', 0),
     ('Title 5', 'Text 5', null, '{"tag7", "tag6"}', 1),
     ('Title 6', 'Text 6', null, '{"tag8", "tag7"}', 2),
     ('Title 7', 'Text 7', null, '{"tag9", "tag8"}', 3),
@@ -21,7 +20,8 @@ VALUES
     ('Title 19', 'Text 19', null, '{"tag1", "tag2"}', 3),
     ('Title 20', 'Text 20', null, '{"tag2", "tag4"}', 4),
     ('Title 21', 'Text 21', null, '{"tag3", "tag5"}', 5),
-    ('Title 22', 'Text 22', null, '{"tag4", "tag6"}', 5);
+    ('Title 22', 'Text 22', null, '{"tag4", "tag6"}', 5),
+    ('Title 23', 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using ''Content here, content here'', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for ''lorem ipsum'' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).', null, '{"tag6", "tag5"}', 0);
 
 INSERT INTO post_comments (post_id, created_at, text_)
 VALUES

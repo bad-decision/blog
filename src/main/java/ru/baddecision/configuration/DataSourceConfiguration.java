@@ -1,5 +1,6 @@
 package ru.baddecision.configuration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.postgresql.Driver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,9 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfiguration {
+
+    @Value("${blog.debugDataFile:}")
+    private String debugDataFile;
 
     @Bean
     public DataSource dataSource(
@@ -39,10 +43,11 @@ public class DataSourceConfiguration {
     @EventListener
     public void populate(ContextRefreshedEvent event) {
         DataSource dataSource = event.getApplicationContext().getBean(DataSource.class);
-
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("schema.sql"));
-        populator.addScript(new ClassPathResource("data.sql"));
+        if (StringUtils.isNotBlank(debugDataFile)) {
+            populator.addScript(new ClassPathResource("data.sql"));
+        }
         populator.execute(dataSource);
     }
 }

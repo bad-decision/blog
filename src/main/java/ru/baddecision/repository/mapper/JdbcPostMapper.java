@@ -14,7 +14,7 @@ public class JdbcPostMapper implements RowMapper<Post> {
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))
                 .text(rs.getString("text_"))
-                .imagePath(rs.getString("image_path"))
+                .imageName(rs.getString("image_name"))
                 .likeCount(rs.getLong("like_count"))
                 .tags(List.of((String[])(rs.getArray("tags").getArray())))
                 .build();

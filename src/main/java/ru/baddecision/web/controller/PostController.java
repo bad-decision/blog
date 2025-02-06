@@ -1,15 +1,16 @@
 package ru.baddecision.web.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.baddecision.model.Post;
 import ru.baddecision.model.PostFilter;
+import ru.baddecision.service.FileService;
 import ru.baddecision.service.PostCommentService;
 import ru.baddecision.service.PostService;
 import ru.baddecision.web.dto.PostCommentCreateUpdateDto;
@@ -32,6 +33,7 @@ public class PostController {
     private final PostCommentMapper postCommentMapper;
     private final PostService postService;
     private final PostCommentService postCommentService;
+    private final FileService fileService;
 
     @GetMapping
     public String getPostList(@RequestParam Optional<Long> page,
@@ -58,14 +60,21 @@ public class PostController {
     }
 
     @PostMapping
-    public String createPost(PostCreateUpdateDto dto) {
-        postService.createPost(postMapper.toPost(dto));
+    public String createPost(PostCreateUpdateDto dto,
+                             HttpServletRequest request) {
+        String imageName = fileService.saveFile(dto.getFile(), request.getServletContext().getRealPath("/"));
+        Post post = postMapper.toPost(dto, imageName);
+        postService.createPost(post);
         return "redirect:/posts";
     }
 
     @PostMapping(value = "/{id}", params = "_method=patch")
-    public String updatePost(@ModelAttribute PostCreateUpdateDto dto) {
-        postService.updatePost(postMapper.toPost(dto));
+    public String updatePost(PostCreateUpdateDto dto,
+                             HttpServletRequest request) {
+        boolean needUpdateImage = dto.getFile() != null;
+        String imageName = fileService.saveFile(dto.getFile(), request.getServletContext().getRealPath("/"));
+        Post post = postMapper.toPost(dto, imageName);
+        postService.updatePost(post, needUpdateImage);
         return "redirect:/posts/" + dto.getId();
     }
 
@@ -82,13 +91,13 @@ public class PostController {
     }
 
     @PostMapping(value = "/{postId}/comment")
-    public String createPostComment(@ModelAttribute PostCommentCreateUpdateDto dto) {
+    public String createPostComment(PostCommentCreateUpdateDto dto) {
         postCommentService.createPostComment(postCommentMapper.toPostComment(dto));
         return "redirect:/posts/" + dto.getPostId();
     }
 
     @PostMapping(value = "/{postId}/comment/{id}", params = "_method=patch")
-    public String updatePostComment(@ModelAttribute PostCommentCreateUpdateDto dto) {
+    public String updatePostComment(PostCommentCreateUpdateDto dto) {
         postCommentService.updatePostComment(postCommentMapper.toPostComment(dto));
         return "redirect:/posts/" + dto.getPostId();
     }

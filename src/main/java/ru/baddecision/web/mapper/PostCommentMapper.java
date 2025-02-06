@@ -6,7 +6,6 @@ import ru.baddecision.web.dto.PostCommentCreateUpdateDto;
 
 @Component
 public class PostCommentMapper {
-
     public PostComment toPostComment(PostCommentCreateUpdateDto dto) {
         return PostComment.builder()
                 .id(dto.getId())

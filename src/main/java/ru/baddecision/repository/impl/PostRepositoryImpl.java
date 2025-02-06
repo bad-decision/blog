@@ -29,13 +29,13 @@ public class PostRepositoryImpl implements PostRepository {
     public List<Post> getBy(PostFilter filter) {
         long offset = (filter.getPage() - 1) * filter.getLimit();
         boolean filterByTag = StringUtils.isNotBlank(filter.getTag());
-        String findAllQuery =  filterByTag ?
-                "SELECT id, name, text_, image_path, tags, like_count FROM posts WHERE ? = ANY(tags) LIMIT ? OFFSET ?" :
-                "SELECT id, name, text_, image_path, tags, like_count FROM posts LIMIT ? OFFSET ?";
+        String getQuery =  filterByTag ?
+                "SELECT id, name, text_, image_name, tags, like_count FROM posts WHERE ? = ANY(tags) ORDER BY id desc LIMIT ? OFFSET ?" :
+                "SELECT id, name, text_, image_name, tags, like_count FROM posts ORDER BY id desc LIMIT ? OFFSET ?";
         List<Object> args = filterByTag ?
                 List.of(filter.getTag(), filter.getLimit(), offset) :
                 List.of(filter.getLimit(), offset);
-        List<Post> posts = jdbcTemplate.query(findAllQuery, jdbcPostMapper, args.toArray());
+        List<Post> posts = jdbcTemplate.query(getQuery, jdbcPostMapper, args.toArray());
         List<Long> postIds = posts.stream().map(Post::getId).toList();
         List<PostComment> postComments = postCommentRepository.getByPostId(postIds);
         posts.forEach(post -> post.setComments(postComments.stream()
@@ -46,7 +46,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public Post getBy(Long id) {
-        String findByIdQuery = "SELECT id, name, p.text_ as text_, image_path, tags, like_count FROM posts p WHERE id=?";
+        String findByIdQuery = "SELECT id, name, p.text_ as text_, image_name, tags, like_count FROM posts p WHERE id=?";
         Post post = jdbcTemplate.query(findByIdQuery, jdbcPostMapper, id).stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
@@ -56,13 +56,13 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void create(Post post) {
-        String insertPostQuery = "INSERT INTO posts (name, text_, image_path, tags, like_count) VALUES (?,?,?,?,?)";
+        String insertPostQuery = "INSERT INTO posts (name, text_, image_name, tags, like_count) VALUES (?,?,?,?,?)";
         jdbcTemplate.update(connection -> {
             Array array = connection.createArrayOf("VARCHAR", post.getTags().toArray());
             PreparedStatement ps = connection.prepareStatement(insertPostQuery);
             ps.setString(1, post.getName());
             ps.setString(2, post.getText());
-            ps.setString(3, post.getImagePath());
+            ps.setString(3, post.getImageName());
             ps.setArray(4, mapToSqlArray(connection, post.getTags()));
             ps.setLong(5, post.getLikeCount());
             return ps;
@@ -71,12 +71,12 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void update(Post post) {
-        String updatePostQuery = "UPDATE posts SET name=?, text_=?, image_path=?, tags=?, like_count=? WHERE id=?";
+        String updatePostQuery = "UPDATE posts SET name=?, text_=?, image_name=?, tags=?, like_count=? WHERE id=?";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(updatePostQuery);
             ps.setString(1, post.getName());
             ps.setString(2, post.getText());
-            ps.setString(3, post.getImagePath());
+            ps.setString(3, post.getImageName());
             ps.setArray(4, mapToSqlArray(connection, post.getTags()));
             ps.setLong(5, post.getLikeCount());
             ps.setLong(6, post.getId());
