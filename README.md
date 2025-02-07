@@ -7,9 +7,9 @@
 - Lombok
 - PostgreSQL
 
-Запуск приложения происходит:
-- сборка war, например:
+Запуск приложения:
 ```
-.\gradlew.bat war
+docker-compose up
 ```
-- деплой на веб-сервер, например, apache tomcat 
+
+Приложение доступно по адресу: http://localhost:8888/posts

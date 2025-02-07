@@ -1,0 +1,38 @@
+version: '3.3'
+
+services:
+  blog-web:
+    restart: always
+    build:
+      dockerfile: ./Dockerfile
+    container_name: blog-web
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/blog
+    ports:
+      - "${BLOG_PORT:-8888}:8080"
+    depends_on:
+      - blog-postgres
+    networks:
+      - blog
+
+  blog-postgres:
+    restart: always
+    image: postgres:16.1
+    container_name: blog-postgres
+    environment:
+      POSTGRES_USER: ${BLOG_DB_USERNAME:-blog}
+      POSTGRES_PASSWORD: ${BLOG_DB_PASSWORD:-blog}
+      POSTGRES_DB: ${BLOG_DB_NAME:-blog}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --data-checksums"
+    volumes:
+      - blog-volume-postgres:/var/lib/postgresql/data
+    ports:
+      - "35432:5432"
+    networks:
+      - blog
+
+volumes:
+  blog-volume-postgres:
+
+networks:
+  blog:
