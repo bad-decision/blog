@@ -5,7 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import ru.baddecision.model.Post;
 import ru.baddecision.model.PostComment;
 import ru.baddecision.model.PostFilter;
@@ -29,7 +32,7 @@ public class PostRepositoryImpl implements PostRepository {
     public List<Post> getBy(PostFilter filter) {
         long offset = (filter.getPage() - 1) * filter.getLimit();
         boolean filterByTag = StringUtils.isNotBlank(filter.getTag());
-        String getQuery =  filterByTag ?
+        String getQuery = filterByTag ?
                 "SELECT id, name, text_, image_name, tags, like_count FROM posts WHERE ? = ANY(tags) ORDER BY id desc LIMIT ? OFFSET ?" :
                 "SELECT id, name, text_, image_name, tags, like_count FROM posts ORDER BY id desc LIMIT ? OFFSET ?";
         List<Object> args = filterByTag ?
@@ -49,24 +52,26 @@ public class PostRepositoryImpl implements PostRepository {
         String findByIdQuery = "SELECT id, name, p.text_ as text_, image_name, tags, like_count FROM posts p WHERE id=?";
         Post post = jdbcTemplate.query(findByIdQuery, jdbcPostMapper, id).stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
-        post.setComments(postCommentRepository.getByPostId(id));
+                .orElse(null);
+        if (post != null) {
+            post.setComments(postCommentRepository.getByPostId(id));
+        }
         return post;
     }
 
     @Override
-    public void create(Post post) {
+    public Post create(Post post) {
         String insertPostQuery = "INSERT INTO posts (name, text_, image_name, tags, like_count) VALUES (?,?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            Array array = connection.createArrayOf("VARCHAR", post.getTags().toArray());
-            PreparedStatement ps = connection.prepareStatement(insertPostQuery);
-            ps.setString(1, post.getName());
-            ps.setString(2, post.getText());
-            ps.setString(3, post.getImageName());
-            ps.setArray(4, mapToSqlArray(connection, post.getTags()));
-            ps.setLong(5, post.getLikeCount());
-            return ps;
-        });
+            PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(insertPostQuery);
+            pscf.setReturnGeneratedKeys(true);
+            PreparedStatementCreator psc = pscf.newPreparedStatementCreator(Arrays.asList(post.getName(), post.getText(),
+                    post.getImageName(), mapToSqlArray(connection, post.getTags()), post.getLikeCount()));
+            return psc.createPreparedStatement(connection);
+        }, keyHolder);
+        Long id = (Long) (keyHolder.getKeys().get("id"));
+        return getBy(id);
     }
 
     @Override
@@ -98,7 +103,10 @@ public class PostRepositoryImpl implements PostRepository {
         jdbcTemplate.update(psc);
     }
 
-    private Array mapToSqlArray(Connection connection,  List<String> items) throws SQLException {
+    private Array mapToSqlArray(Connection connection, List<String> items) throws SQLException {
+        if (CollectionUtils.isEmpty(items)) {
+            return null;
+        }
         return connection.createArrayOf("VARCHAR", items.toArray());
     }
 }

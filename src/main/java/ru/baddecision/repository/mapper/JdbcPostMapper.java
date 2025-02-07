@@ -5,6 +5,7 @@ import ru.baddecision.model.Post;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcPostMapper implements RowMapper<Post> {
@@ -16,7 +17,9 @@ public class JdbcPostMapper implements RowMapper<Post> {
                 .text(rs.getString("text_"))
                 .imageName(rs.getString("image_name"))
                 .likeCount(rs.getLong("like_count"))
-                .tags(List.of((String[])(rs.getArray("tags").getArray())))
+                .tags(rs.getArray("tags") != null ?
+                        List.of((String[])(rs.getArray("tags").getArray())) :
+                        new ArrayList<>())
                 .build();
     }
 }

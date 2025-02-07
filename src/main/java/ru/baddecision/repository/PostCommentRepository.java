@@ -5,11 +5,13 @@ import ru.baddecision.model.PostComment;
 import java.util.List;
 
 public interface PostCommentRepository {
+    PostComment getById(Long id);
+
     List<PostComment> getByPostId(Long postId);
 
     List<PostComment> getByPostId(List<Long> postIds);
 
-    void create(PostComment postComment);
+    PostComment create(PostComment postComment);
 
     void update(PostComment postComment);
 

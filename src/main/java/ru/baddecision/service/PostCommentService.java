@@ -13,9 +13,13 @@ public class PostCommentService {
 
     private final PostCommentRepository postCommentRepository;
 
-    public void createPostComment(PostComment postComment) {
+    public PostComment getById(Long id) {
+        return postCommentRepository.getById(id);
+    }
+
+    public PostComment createPostComment(PostComment postComment) {
         postComment.setCreatedAt(LocalDateTime.now());
-        postCommentRepository.create(postComment);
+        return postCommentRepository.create(postComment);
     }
 
     public void updatePostComment(PostComment postComment) {

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import ru.baddecision.model.PostComment;
@@ -24,6 +26,14 @@ public class PostCommentRepositoryImpl implements PostCommentRepository {
     private final JdbcPostCommentMapper jdbcPostCommentMapper = new JdbcPostCommentMapper();
 
     @Override
+    public PostComment getById(Long id) {
+        String findByIdQuery = "SELECT id, text_, created_at, post_id FROM post_comments WHERE id=?";
+        return jdbcTemplate.query(findByIdQuery, jdbcPostCommentMapper, id).stream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
     public List<PostComment> getByPostId(Long postId) {
         String findByIdQuery = "SELECT id, text_, created_at, post_id FROM post_comments WHERE post_id=?";
         return jdbcTemplate.query(findByIdQuery, jdbcPostCommentMapper, postId);
@@ -40,13 +50,17 @@ public class PostCommentRepositoryImpl implements PostCommentRepository {
     }
 
     @Override
-    public void create(PostComment postComment) {
+    public PostComment create(PostComment postComment) {
         String insertPostCommentQuery = "INSERT INTO post_comments (text_, created_at, post_id) VALUES (?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(insertPostCommentQuery,
                 Types.VARCHAR, Types.TIMESTAMP, Types.BIGINT);
         PreparedStatementCreator psc = pscf.newPreparedStatementCreator(Arrays.asList(postComment.getText(), postComment.getCreatedAt(),
                 postComment.getPostId()));
-        jdbcTemplate.update(psc);
+        pscf.setReturnGeneratedKeys(true);
+        jdbcTemplate.update(psc, keyHolder);
+        Long id = (Long) (keyHolder.getKeys().get("id"));
+        return getById(id);
     }
 
     @Override

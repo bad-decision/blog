@@ -22,8 +22,8 @@ public class PostService {
         return postRepository.getBy(id);
     }
 
-    public void createPost(Post post) {
-        postRepository.create(post);
+    public Post createPost(Post post) {
+        return postRepository.create(post);
     }
 
     public void updatePost(Post post, boolean needUpdateImage) {

@@ -10,7 +10,7 @@ public interface PostRepository {
 
     Post getBy(Long id);
 
-    void create(Post post);
+    Post create(Post post);
 
     void update(Post post);
 
