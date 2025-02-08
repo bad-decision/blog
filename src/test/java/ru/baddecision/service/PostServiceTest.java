@@ -53,7 +53,7 @@ class PostServiceTest {
     @Test
     void createPost() {
         doReturn(testPost).when(postRepository).create(testPost);
-        Post result = postService.createPost(testPost);
+        Post result = postService.createPost(testPost, null);
         assertEquals(testPost, result);
         verify(postRepository, times(1)).create(testPost);
     }
@@ -62,7 +62,7 @@ class PostServiceTest {
     void updatePost() {
         doNothing().when(postRepository).update(testPost);
         doReturn(testPost).when(postRepository).getBy(testPost.getId());
-        postService.updatePost(testPost, false);
+        postService.updatePost(testPost, null);
         verify(postRepository, times(1)).update(testPost);
     }
 

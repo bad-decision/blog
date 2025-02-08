@@ -2,6 +2,7 @@ package ru.baddecision.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.baddecision.model.Post;
 import ru.baddecision.model.PostFilter;
 import ru.baddecision.repository.PostRepository;
@@ -13,6 +14,7 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final FileService fileService;
 
     public List<Post> getPostBy(PostFilter filter) {
         return postRepository.getBy(filter);
@@ -22,17 +24,22 @@ public class PostService {
         return postRepository.getBy(id);
     }
 
-    public Post createPost(Post post) {
+    public Post createPost(Post post, MultipartFile file) {
+        if (file != null) {
+            String imageName = fileService.saveFile(file);
+            post.setImageName(imageName);
+        }
         return postRepository.create(post);
     }
 
-    public void updatePost(Post post, boolean needUpdateImage) {
+    public void updatePost(Post post, MultipartFile file) {
         Post existPost = getPostBy(post.getId());
         existPost.setTags(post.getTags());
         existPost.setName(post.getName());
         existPost.setText(post.getText());
-        if (needUpdateImage) {
-            existPost.setImageName(post.getImageName());
+        if (file != null) {
+            String imageName = fileService.saveFile(file);
+            existPost.setImageName(imageName);
         }
         postRepository.update(existPost);
     }

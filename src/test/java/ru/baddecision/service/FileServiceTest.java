@@ -10,7 +10,7 @@ class FileServiceTest {
 
     @Test
     void saveFile_mustReturnNull() {
-        String result = fileService.saveFile(null, "/");
+        String result = fileService.saveFile(null);
         assertNull(result);
     }
 }

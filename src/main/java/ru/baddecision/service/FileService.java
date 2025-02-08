@@ -16,8 +16,10 @@ public class FileService {
 
     @Value("${blog.imagesDir}")
     private String imagesDir;
+    @Value("${blog.basePath}")
+    private String basePath;
 
-    public String saveFile(MultipartFile file, String basePath) {
+    public String saveFile(MultipartFile file) {
         if (file == null || StringUtils.isEmpty(file.getOriginalFilename())) {
             return null;
         }

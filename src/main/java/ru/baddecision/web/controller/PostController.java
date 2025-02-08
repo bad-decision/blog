@@ -1,6 +1,5 @@
 package ru.baddecision.web.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.baddecision.model.Post;
 import ru.baddecision.model.PostFilter;
-import ru.baddecision.service.FileService;
 import ru.baddecision.service.PostCommentService;
 import ru.baddecision.service.PostService;
 import ru.baddecision.web.dto.PostCommentCreateUpdateDto;
@@ -33,7 +31,6 @@ public class PostController {
     private final PostCommentMapper postCommentMapper;
     private final PostService postService;
     private final PostCommentService postCommentService;
-    private final FileService fileService;
 
     @GetMapping
     public String getPostList(@RequestParam Optional<Long> page,
@@ -60,21 +57,16 @@ public class PostController {
     }
 
     @PostMapping
-    public String createPost(PostCreateUpdateDto dto,
-                             HttpServletRequest request) {
-        String imageName = fileService.saveFile(dto.getFile(), request.getServletContext().getRealPath("/"));
-        Post post = postMapper.toPost(dto, imageName);
-        postService.createPost(post);
+    public String createPost(PostCreateUpdateDto dto) {
+        Post post = postMapper.toPost(dto);
+        postService.createPost(post, dto.getFile());
         return "redirect:/posts";
     }
 
     @PostMapping(value = "/{id}", params = "_method=patch")
-    public String updatePost(PostCreateUpdateDto dto,
-                             HttpServletRequest request) {
-        boolean needUpdateImage = dto.getFile() != null;
-        String imageName = fileService.saveFile(dto.getFile(), request.getServletContext().getRealPath("/"));
-        Post post = postMapper.toPost(dto, imageName);
-        postService.updatePost(post, needUpdateImage);
+    public String updatePost(PostCreateUpdateDto dto) {
+        Post post = postMapper.toPost(dto);
+        postService.updatePost(post, dto.getFile());
         return "redirect:/posts/" + dto.getId();
     }
 
