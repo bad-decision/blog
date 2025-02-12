@@ -7,7 +7,7 @@ services:
       dockerfile: ./Dockerfile
     container_name: blog-web
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/blog
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:35432/blog
     ports:
       - "${BLOG_PORT:-8888}:8080"
     depends_on:

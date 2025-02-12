@@ -4,11 +4,12 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Блог</title>
-    <link rel="stylesheet" th:href="@{|/static/css/bootstrap.min.css|}" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{|/css/bootstrap.min.css|}" crossorigin="anonymous">
 </head>
 <body>
 <header class="p-3 text-primary">
-    <h1 style="text-align: center">Spring framework blog</h1>
+
+    <h1 style="text-align: center"><img th:src="@{|/images/spring.png|}"> framework blog</h1>
 </header>
 
 <div class="container" style="text-align: right; margin-top: 20px">
@@ -32,7 +33,7 @@
                 <a th:text="${post.name}" th:href="@{|/posts/${post.id}|}"></a>
             </h4>
             <div th:if="${post.imageName != null}">
-                <img th:src="@{|/static/images/${post.imageName}|}">
+                <img th:src="@{|/${post.imageName}|}">
             </div>
             <pre th:text="${post.text}" style="text-wrap: auto; overflow: hidden; max-height: 65px"></pre>
             <div>
@@ -85,6 +86,6 @@
     </div>
 </div>
 
-<script th:src="@{|/static/js/bootstrap.min.js|}" crossorigin="anonymous"></script>
+<script th:src="@{|/js/bootstrap.min.js|}" crossorigin="anonymous"></script>
 </body>
 </html>

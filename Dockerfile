@@ -2,14 +2,16 @@ FROM openjdk:21-slim as builder
 
 WORKDIR /blog
 
-COPY . .
+COPY . ./
 
-RUN ./gradlew clean war
+RUN ./mvnw -Dmaven.test.skip -DskipTests clean package
 
-FROM tomcat:10.1.24-jdk21
+FROM openjdk:21-slim
 
-ENV TZ="Europe/Moscow"
+WORKDIR /blog
 
-RUN apt-get update && apt-get install -y fontconfig libfreetype6
+RUN mkdir /files
 
-COPY --from=builder /blog/build/libs/blog.war /usr/local/tomcat/webapps/ROOT.war
+COPY --from=builder /blog/target/blog-1.0-SNAPSHOT.jar /blog/blog.jar
+
+ENTRYPOINT ["java", "-jar", "/blog/blog.jar"]

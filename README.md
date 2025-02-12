@@ -2,7 +2,7 @@
 Веб приложение "Блог постов"
 
 Используемые технологии:
-- Spring Framework
+- Spring Boot Framework
 - Spring Data JDBC
 - Lombok
 - PostgreSQL
